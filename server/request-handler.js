@@ -19,14 +19,16 @@ var defaultCorsHeaders = {
   'Content-Type': 'application/JSON'
 };
 
-var processGET = function() {
-  response.writeHead(statusCode, headers);
-  response.end(JSON.stringify({'test': 'yay it works?'}));
+var results = [];
+
+var processGET = function(request, response) {
+  response.writeHead(200, defaultCorsHeaders);
+  response.end(JSON.stringify({results: []}));
 };
 
-var processPOST = function() {
-  response.writeHead(statusCode, headers);
-  response.end('Hello, World!');
+var processPOST = function(request, response) {
+  response.writeHead(200, defaultCorsHeaders);
+  response.end(JSON.stringify({'message': request.message}));
 };
 
 module.exports = function(request, response) {
@@ -38,21 +40,25 @@ module.exports = function(request, response) {
     }
   };
 
-  if (!routes[request.url]) {
-    response.writeHead(404, headers);
+  if (!(request.url in routes)) {
+    response.writeHead(404, defaultCorsHeaders);
     response.end(JSON.stringify({
       'status': 404,
       'message': 'File not found...'
     }));
-  }
-  if (!routes[request.url][request.method]) {
-    response.writeHead(405, headers);
+    return;
+
+  } else if (!(request.method in routes[request.url])) {
+    response.writeHead(405, defaultCorsHeaders);
     response.end(JSON.stringify({
       'status': 405,
       'message': 'Method not allowed...'
     }));
-  }
+    return;
+
+  } 
   
+  routes[request.url][request.method](request, response);  
 
 };
 
