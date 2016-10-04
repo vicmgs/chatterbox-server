@@ -6,29 +6,7 @@ $( document ).ready(function() {
     new ChatModel(undefined, httpService),
     new ChatModel('Lobby', httpService),
   ];
-  
-  httpService.getNewMessages();
-  setTimeout(function() {
-    for (var i = 0; i < chatrooms.length; i++) {
-      chatrooms[i].populateRoom();
-      chatrooms[i].addMessages();
-    }
-  }, 500);
 
-  setInterval(function() {
-    httpService.getNewMessages();
-    for (var i = 0; i < chatrooms.length; i++) {
-      chatrooms[i].addMessages();
-    }
-    renderFriends();
-  }, 500);
-
-  setInterval(function() {
-    for (var i = 0; i < chatrooms.length; i++) {
-      chatrooms[i].populateRoom();
-    }
-  }, 5000);
-  
   var renderFriends = function() {
     var friends = ChatModel.prototype.friends;
 
@@ -57,7 +35,29 @@ $( document ).ready(function() {
       $friend.appendTo('#friendsWrapper');
     }
   };
+  
+  httpService.getNewMessages();
+  setTimeout(function() {
+    for (var i = 0; i < chatrooms.length; i++) {
+      chatrooms[i].populateRoom();
+      chatrooms[i].addMessages();
+    }
+  }, 500);
 
+  setInterval(function() {
+    httpService.getNewMessages();
+    for (var i = 0; i < chatrooms.length; i++) {
+      chatrooms[i].addMessages();
+    }
+    renderFriends();
+  }, 500);
+
+  setInterval(function() {
+    for (var i = 0; i < chatrooms.length; i++) {
+      chatrooms[i].populateRoom();
+    }
+  }, 5000);
+  
   $('.username').click(function(event) {
     console.log('username clicked');
     for (var i = 0; i < chatrooms.length; i++) {
