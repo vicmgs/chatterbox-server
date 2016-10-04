@@ -7,7 +7,6 @@ module.exports = {
     var url = request.url.split('?')[0];
 
     url === '/' ? (url = '/index.html') : url;
-    console.log('serving url ', url);
 
     if (url.includes('bower_components')) {
       url = './client' + url;
