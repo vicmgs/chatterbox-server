@@ -1,0 +1,62 @@
+.friends {
+    margin: 2px;
+}
+
+.friend{
+    color: green;
+    font-weight: bold;
+}
+
+.friendRemove {
+    color: white;
+}
+
+.friendRemove:hover {
+    cursor: pointer;
+}
+
+.chatbox {
+    margin: 4px;
+    width: 30%;
+}
+
+.center {
+    text-align: center;
+}
+.chatMessages{
+    height: 500px;
+    overflow-y: auto;
+}
+.chatInput{
+    height:35px;
+    border-radius:4px;
+    line-height: 35px;
+}
+.chatInputBtn{
+    float:right;
+    margin-right: 5px;
+}
+.newRoomBtn{
+    height: 18px;
+    width: 18px;
+    line-height: 14px;
+    padding: 0px;
+}
+.username {
+  font-size: 20px;
+}
+
+.username:hover {
+    cursor: pointer;
+    color: blue;
+}
+
+.timestamp {
+    font-size: 12px;
+    color: gray;
+    float: right;
+}
+
+#wrapper {
+    margin: auto;
+}
