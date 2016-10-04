@@ -1,4 +1,5 @@
 var fs = require('fs');
+var MessageModel = require('./models/MessageModel');
 
 /*************************************************************
 
@@ -21,8 +22,6 @@ var defaultCorsHeaders = {
   'Content-Type': 'application/JSON'
 };
 
-var results = [];
-
 var PageController = {
   get: function(request, response) {
     fs.readFile('./client/index.html', 'binary', function(error, file) {
@@ -43,10 +42,10 @@ var PageController = {
   }
 };
 
-var Messages = {
+var MessagesController = {
   get: function(request, response) {
     response.writeHead(200, defaultCorsHeaders);
-    response.end(JSON.stringify({results: results}));
+    response.end(JSON.stringify({results: MessageModel.getMessages()}));
   },
   post: function(request, response) {
     var data = [];
@@ -54,30 +53,7 @@ var Messages = {
       data.push(chunck);
     }).on('end', function() {
       data = Buffer.concat(data).toString();
-      results.push(JSON.parse(data));
-
-      response.writeHead(201, defaultCorsHeaders);
-      response.end(data);
-    }).on('error', function(error) {
-      console.log(error);
-      response.writeHead(400, defaultCorsHeaders);
-      response.end(error);
-    });
-  }
-};
-
-var Room = {
-  get: function(request, response) {
-    response.writeHead(200, defaultCorsHeaders);
-    response.end(JSON.stringify({results: results}));
-  },
-  post: function(request, response) {
-    var data = [];
-    request.on('data', function(chunck) {
-      data.push(chunck);
-    }).on('end', function() {
-      data = Buffer.concat(data).toString();
-      results.push(JSON.parse(data));
+      MessageModel.addMessage(JSON.parse(data));
 
       response.writeHead(201, defaultCorsHeaders);
       response.end(data);
@@ -96,12 +72,8 @@ module.exports.requestHandler = function(request, response) {
       'GET': PageController.get
     },
     '/api/classes/messages': {
-      'GET': Messages.get,
-      'POST': Messages.post
-    },
-    '/api/classes/room': {
-      'GET': Room.get,
-      'POST': Room.post
+      'GET': MessagesController.get,
+      'POST': MessagesController.post
     }
   };
 
