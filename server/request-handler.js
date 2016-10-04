@@ -1,5 +1,6 @@
 var fs = require('fs');
-var MessageModel = require('./models/MessageModel');
+var PageController = require('./controllers/PageController');
+var MessageController = require('./controllers/MessageController');
 
 /*************************************************************
 
@@ -22,49 +23,6 @@ var defaultCorsHeaders = {
   'Content-Type': 'application/JSON'
 };
 
-var PageController = {
-  get: function(request, response) {
-    fs.readFile('./client/index.html', 'binary', function(error, file) {
-      if (error) {
-        response.writeHead(500, defaultCorsHeaders);
-        response.end(JSON.stringify({
-          'status': 500,
-          'message': 'Internal server error reading file index.html'
-        }));
-        return;
-      }
-
-      defaultCorsHeaders['Content-Type'] = 'text/html';
-      response.writeHead(200, defaultCorsHeaders);
-      response.write(file, 'binary');
-      response.end();
-    });
-  }
-};
-
-var MessagesController = {
-  get: function(request, response) {
-    response.writeHead(200, defaultCorsHeaders);
-    response.end(JSON.stringify({results: MessageModel.getMessages()}));
-  },
-  post: function(request, response) {
-    var data = [];
-    request.on('data', function(chunck) {
-      data.push(chunck);
-    }).on('end', function() {
-      data = Buffer.concat(data).toString();
-      MessageModel.addMessage(JSON.parse(data));
-
-      response.writeHead(201, defaultCorsHeaders);
-      response.end(data);
-    }).on('error', function(error) {
-      console.log(error);
-      response.writeHead(400, defaultCorsHeaders);
-      response.end(error);
-    });
-  }
-};
-
 module.exports.requestHandler = function(request, response) {
 
   var routes = {
@@ -72,8 +30,8 @@ module.exports.requestHandler = function(request, response) {
       'GET': PageController.get
     },
     '/api/classes/messages': {
-      'GET': MessagesController.get,
-      'POST': MessagesController.post
+      'GET': MessageController.get,
+      'POST': MessageController.post
     }
   };
 
