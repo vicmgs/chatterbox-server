@@ -1,21 +1,28 @@
 var defaultCorsHeaders = require('../models/CorsModel');
+var ErrorController = require('./ErrorController');
 
 module.exports = {
   get: function(request, response) {
-    fs.readFile('./client/index.html', 'binary', function(error, file) {
+    var url = request.url.split('?')[0];
+
+    if (url.contains('bower_components')) {
+      url = './client' + url;
+    } else {
+      url = './client/client' + url;
+    }
+
+    fs.readFile(url, 'binary', function(error, file) {
       if (error) {
-        response.writeHead(500, defaultCorsHeaders);
-        response.end(JSON.stringify({
-          'status': 500,
-          'message': 'Internal server error reading file index.html'
-        }));
+        ErrorController.INTERNAL_SERVER_ERROR(request, response);
         return;
       }
 
-      defaultCorsHeaders['Content-Type'] = 'text/html';
+      var dataType = url.split('.');
+      defaultCorsHeaders['Content-Type'] = 'text/' + dataType[dataType.length - 1];
       response.writeHead(200, defaultCorsHeaders);
       response.write(file, 'binary');
       response.end();
+      return;
     });
   }
 };

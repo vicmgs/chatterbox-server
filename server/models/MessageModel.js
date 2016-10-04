@@ -2,6 +2,9 @@ module.exports = {
   messages: [],
 
   addMessage: function(message) {
+    message.createdAt = new Date();
+    message.updatedAt = new Date();
+    message.objectId = this.messages.length;
     this.messages.push(message);
   },
 

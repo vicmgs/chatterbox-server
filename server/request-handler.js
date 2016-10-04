@@ -1,6 +1,7 @@
 var fs = require('fs');
 var PageController = require('./controllers/PageController');
 var MessageController = require('./controllers/MessageController');
+var ErrorController = require('./controllers/ErrorController');
 
 /*************************************************************
 
@@ -24,11 +25,18 @@ var defaultCorsHeaders = {
 };
 
 module.exports.requestHandler = function(request, response) {
+  var url = request.url.split('?')[0];
+
+  // Page Call
+  if (!url.include('/api/')) {
+    if (request.method !== 'GET') {
+      ErrorController.METHOD_NOT_ALLOWED(request, response);
+    }
+    PageController.get(request, response);
+    return;
+  }
 
   var routes = {
-    '/': {
-      'GET': PageController.get
-    },
     '/api/classes/messages': {
       'GET': MessageController.get,
       'POST': MessageController.post
@@ -36,19 +44,11 @@ module.exports.requestHandler = function(request, response) {
   };
 
   if (!(request.url in routes)) {
-    response.writeHead(404, defaultCorsHeaders);
-    response.end(JSON.stringify({
-      'status': 404,
-      'message': 'File not found...'
-    }));
+    ErrorController.FILE_NOT_FOUND(request, response);
     return;
 
   } else if (!(request.method in routes[request.url])) {
-    response.writeHead(405, defaultCorsHeaders);
-    response.end(JSON.stringify({
-      'status': 405,
-      'message': 'Method not allowed...'
-    }));
+    ErrorController.METHOD_NOT_ALLOWED(request, response);
     return;
 
   } 
