@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 /*************************************************************
 
 You should implement your request handler function in this file.
@@ -20,6 +22,26 @@ var defaultCorsHeaders = {
 };
 
 var results = [];
+
+var PageController = {
+  get: function(request, response) {
+    fs.readFile('./client/index.html', 'binary', function(error, file) {
+      if (error) {
+        response.writeHead(500, defaultCorsHeaders);
+        response.end(JSON.stringify({
+          'status': 500,
+          'message': 'Internal server error reading file index.html'
+        }));
+        return;
+      }
+
+      defaultCorsHeaders['Content-Type'] = 'text/html';
+      response.writeHead(200, defaultCorsHeaders);
+      response.write(file, 'binary');
+      response.end();
+    });
+  }
+};
 
 var Messages = {
   get: function(request, response) {
@@ -70,11 +92,14 @@ var Room = {
 module.exports.requestHandler = function(request, response) {
 
   var routes = {
-    '/classes/messages': {
+    '/': {
+      'GET': PageController.get
+    },
+    '/api/classes/messages': {
       'GET': Messages.get,
       'POST': Messages.post
     },
-    '/classes/room': {
+    '/api/classes/room': {
       'GET': Room.get,
       'POST': Room.post
     }
