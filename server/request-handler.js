@@ -21,37 +21,62 @@ var defaultCorsHeaders = {
 
 var results = [];
 
-var processGET = function(request, response) {
-  response.writeHead(200, defaultCorsHeaders);
-  response.end(JSON.stringify({results: results}));
+var Messages = {
+  get: function(request, response) {
+    response.writeHead(200, defaultCorsHeaders);
+    response.end(JSON.stringify({results: results}));
+  },
+  post: function(request, response) {
+    var data = [];
+    request.on('data', function(chunck) {
+      data.push(chunck);
+    }).on('end', function() {
+      data = Buffer.concat(data).toString();
+      results.push(JSON.parse(data));
+
+      response.writeHead(201, defaultCorsHeaders);
+      response.end(data);
+    }).on('error', function(error) {
+      console.log(error);
+      response.writeHead(400, defaultCorsHeaders);
+      response.end(error);
+    });
+  }
 };
 
-var processPOST = function(request, response) {
-  var data = [];
-  request.on('data', function(chunck) {
-    data.push(chunck);
-  }).on('end', function() {
-    data = Buffer.concat(data).toString();
-    results.push(JSON.parse(data));
+var Room = {
+  get: function(request, response) {
+    response.writeHead(200, defaultCorsHeaders);
+    response.end(JSON.stringify({results: results}));
+  },
+  post: function(request, response) {
+    var data = [];
+    request.on('data', function(chunck) {
+      data.push(chunck);
+    }).on('end', function() {
+      data = Buffer.concat(data).toString();
+      results.push(JSON.parse(data));
 
-    response.writeHead(201, defaultCorsHeaders);
-    response.end(data);
-  }).on('error', function(error) {
-    console.log(error);
-    response.writeHead(400, defaultCorsHeaders);
-    response.end(error);
-  });
-  //results.push(request.data);
-  //response.end(JSON.stringify({results: results}));
-
+      response.writeHead(201, defaultCorsHeaders);
+      response.end(data);
+    }).on('error', function(error) {
+      console.log(error);
+      response.writeHead(400, defaultCorsHeaders);
+      response.end(error);
+    });
+  }
 };
 
-module.exports = function(request, response) {
+module.exports.requestHandler = function(request, response) {
 
   var routes = {
     '/classes/messages': {
-      'GET': processGET,
-      'POST': processPOST
+      'GET': Messages.get,
+      'POST': Messages.post
+    },
+    '/classes/room': {
+      'GET': Room.get,
+      'POST': Room.post
     }
   };
 
