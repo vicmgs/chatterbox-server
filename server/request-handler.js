@@ -23,12 +23,27 @@ var results = [];
 
 var processGET = function(request, response) {
   response.writeHead(200, defaultCorsHeaders);
-  response.end(JSON.stringify({results: []}));
+  response.end(JSON.stringify({results: results}));
 };
 
 var processPOST = function(request, response) {
-  response.writeHead(200, defaultCorsHeaders);
-  response.end(JSON.stringify({'message': request.message}));
+  var data = [];
+  request.on('data', function(chunck) {
+    data.push(chunck);
+  }).on('end', function() {
+    data = Buffer.concat(data).toString();
+    results.push(JSON.parse(data));
+
+    response.writeHead(201, defaultCorsHeaders);
+    response.end(data);
+  }).on('error', function(error) {
+    console.log(error);
+    response.writeHead(400, defaultCorsHeaders);
+    response.end(error);
+  });
+  //results.push(request.data);
+  //response.end(JSON.stringify({results: results}));
+
 };
 
 module.exports = function(request, response) {
