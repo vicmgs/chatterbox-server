@@ -40,3 +40,4 @@ node_modules
 .idea/
 
 client/bower_components/*
+server/data/*
