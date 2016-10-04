@@ -1,10 +1,11 @@
 $( document ).ready(function() {
-  var httpService = new HttpService();
+  var httpService = new HttpService('/api/classes/messages');
+  var httpServiceVictor = new HttpService('http://10.8.22.68:8080/classes/messages');
 
   var chatrooms = [
     new ChatModel('lobby', httpService),
     new ChatModel(undefined, httpService),
-    new ChatModel('Lobby', httpService),
+    new ChatModel('Lobby', httpService)
   ];
 
   var renderFriends = function() {
@@ -46,6 +47,7 @@ $( document ).ready(function() {
 
   setInterval(function() {
     httpService.getNewMessages();
+    httpServiceVictor.getNewMessages();
     for (var i = 0; i < chatrooms.length; i++) {
       chatrooms[i].addMessages();
     }

@@ -1,8 +1,6 @@
-var HttpService = function() {
+var HttpService = function(url) {
   this.messages = {};
-
-  this.rootUrl = '/api/';
-
+  this.url = url;
 };
 
 /**
@@ -53,10 +51,10 @@ HttpService.prototype.getNewMessages = function () {
   };
 
   $.ajax({
-    url: this.rootUrl + 'classes/messages',
+    url: this.url,
     type: 'GET',
     data: {
-      order: '-createdAt'
+      //order: '-createdAt'
     },
     success: addElements
   });
@@ -79,7 +77,7 @@ HttpService.prototype.sendMessage = function (text, roomName) {
 
   $.ajax({
     type: 'POST',
-    url: this.rootUrl + 'classes/messages',
+    url: this.url,
     data: JSON.stringify(messageData),
     dataType: 'json'
   });
